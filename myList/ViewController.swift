@@ -41,7 +41,7 @@ class ViewController: UIViewController {
         }
     }
     
-    func save(name: String) {
+    func saveName(name: String) {
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -56,14 +56,9 @@ class ViewController: UIViewController {
         do {
             let fetchResult =  try managedContext.fetch(fetchRequest)
             if fetchResult.count != 0 {
-                let managedObject = fetchResult[0]
-                managedObject.setValue(name, forKey: "name")
-                do {
-                    try managedContext.save()
-                    print("Updated !! 🥳")
-                } catch let error as NSError {
-                    print("Could not update. 🥲\(error), \(error.userInfo)")
-                }
+                let alert = UIAlertController(title: "Alert", message: "Data already exist.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
                 
             } else {
                 person.setValue(name, forKey: "name")
@@ -80,6 +75,26 @@ class ViewController: UIViewController {
         }
     }
     
+    func deleteName() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Person")
+        if let fetchResult = try? managedContext.fetch(fetchRequest) {
+            for object in fetchResult {
+                managedContext.delete(object)
+                
+                do {
+                    try managedContext.save()
+                } catch let error as NSError {
+                    print("Could not save after deleted. 😩\(error), \(error.userInfo)")
+                }
+            }
+        }
+    }
+    
     @IBAction func addNameButtonPressed(_ sender: Any) {
         let alert = UIAlertController(title: "New Name", message: "Add a new name", preferredStyle: .alert)
         let saveAction = UIAlertAction(title: "Save", style: .default) { [unowned self] action in
@@ -89,7 +104,7 @@ class ViewController: UIViewController {
                 return
             }
             
-            self.save(name: nameToSave)
+            self.saveName(name: nameToSave)
             self.tableView.reloadData()
         }
         
@@ -101,6 +116,22 @@ class ViewController: UIViewController {
         
         present(alert, animated: true)
     }
+    
+    @IBAction func deleteNameButtonPressed(_ sender: Any) {
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you watn to delete?", preferredStyle: .alert)
+        let saveAction = UIAlertAction(title: "OK", style: .default) { [unowned self] action in
+            self.deleteName()
+            self.people.removeAll()
+            self.tableView.reloadData()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+    
     
 }
 

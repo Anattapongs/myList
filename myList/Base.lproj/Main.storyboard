@@ -31,11 +31,18 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="CKo-EW-0U4">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Jym-Mn-Uis">
-                            <connections>
-                                <action selector="addNameButtonPressed:" destination="BYZ-38-t0r" id="sER-Ld-aR3"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="Jym-Mn-Uis">
+                                <connections>
+                                    <action selector="addNameButtonPressed:" destination="BYZ-38-t0r" id="sER-Ld-aR3"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="trash" id="Cnf-6w-fdD">
+                                <connections>
+                                    <action selector="deleteNameButtonPressed:" destination="BYZ-38-t0r" id="Ufj-Rt-7KO"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="tdt-kw-f6W" id="Bze-kK-9zg"/>
