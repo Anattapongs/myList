@@ -50,14 +50,33 @@ class ViewController: UIViewController {
         let managedContext = appDelegate.persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: "Person", in: managedContext)!
         let person = NSManagedObject(entity: entity, insertInto: managedContext)
-        
-        person.setValue(name, forKeyPath: "name")
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Person")
+        fetchRequest.predicate = NSPredicate(format: "name = %@", name)
         
         do {
-            try managedContext.save()
-            people.append(person)
+            let fetchResult =  try managedContext.fetch(fetchRequest)
+            if fetchResult.count != 0 {
+                let managedObject = fetchResult[0]
+                managedObject.setValue(name, forKey: "name")
+                do {
+                    try managedContext.save()
+                    print("Updated !! 🥳")
+                } catch let error as NSError {
+                    print("Could not update. 🥲\(error), \(error.userInfo)")
+                }
+                
+            } else {
+                person.setValue(name, forKey: "name")
+                
+                do {
+                    try managedContext.save()
+                    people.append(person)
+                } catch let error as NSError {
+                    print("Could not save. 😭\(error), \(error.userInfo)")
+                }
+            }
         } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
+            print("Could not fetch. 🥺\(error), \(error.userInfo)")
         }
     }
     
